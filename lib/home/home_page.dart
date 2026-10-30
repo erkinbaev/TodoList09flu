@@ -136,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final result = await Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => AddPage()));
+    cubit.getTodoList();
     if (result != null) {
       print("$result");
     }
