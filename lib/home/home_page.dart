@@ -58,7 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
             return Center(child: Text("У вас еще нет задач"));
           } else if (state.status == .isLoading) {
             return Center(child: CircularProgressIndicator());
-          } else {
+          } else if (state.status == .error) {
+            return Center(child: Icon(Icons.error));
+          }  else {
             return Center(
               child: ListView.builder(
                 itemCount: state.todoList.length,

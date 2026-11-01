@@ -3,7 +3,8 @@ import 'package:todo_list09flu/database/todo.dart';
 enum HomeStatus {
   success,
   empty,
-  isLoading
+  isLoading,
+  error
 }
 
 class HomeState {

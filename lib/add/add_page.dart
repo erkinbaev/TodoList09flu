@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:todo_list09flu/database/todo.dart';
 import 'package:todo_list09flu/main.dart';
+import 'package:todo_list09flu/utils/app_snackbar.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -59,18 +60,34 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
-  void _onSaveTap() {
+   void _onSaveTap() async {
+    try {
+      saveTask();
+      showAppSnackBar(text: "Задача успешно сохранена", backgroundColor: Colors.green, icon: Icons.check);
+      await Future.delayed(Duration(seconds: 3));
+      Navigator.of(context).pop(_textEditingController.text);
+    } catch (e) {
+      showAppSnackBar(text: e.toString(), backgroundColor: Colors.red, icon: Icons.error);
+    }
+  }
+
+  void saveTask() {
     final title = _textEditingController.text;
     final createdAt = DateTime.now().toString();
-    appRepository.addTodo(Todo(
+
+    if (title.isEmpty) {
+      throw TaskTextException(message: "Текст не может быть пустым!");
+    } else if (title.length <4 && title.length >0) {
+      throw TaskTextException(message: "Недостаточно символов в тексте!");
+    } else {
+      appRepository.addTodo(Todo(
       id: 1, 
       title: title, 
       isDone: false, 
       createAt: createdAt, 
       deadline: DateTime.now().toString())
       );
-
-    Navigator.of(context).pop(_textEditingController.text);
+    }
   }
 
   //высвобождает наш виджет из памяти
@@ -83,5 +100,15 @@ class _AddPageState extends State<AddPage> {
     print("Add Page - dispose");
     timer.cancel();
     _textEditingController.dispose();
+  }
+}
+
+class TaskTextException implements Exception {
+  String message;
+
+  TaskTextException({required this.message});
+
+  String toString() {
+    return message;
   }
 }

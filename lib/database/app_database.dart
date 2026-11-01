@@ -59,7 +59,7 @@ class AppDatabase {
   //UPDATE
   void updateTodo(int id, String title, String deadline) {
     //Пройтись по списку и сравить id и заменить новыми данными
-    
+
     saveTodos();
   }
 
