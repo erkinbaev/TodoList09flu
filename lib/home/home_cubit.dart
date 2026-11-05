@@ -7,25 +7,19 @@ import 'dart:math';
 
 class HomeCubit extends Cubit<HomeState> {
   
-  List<Todo> todoList = [];
+  
   
   HomeCubit():super (HomeState(todoList: [], status: .isLoading));
 
-  void getTodoList() {
-    todoList =  appRepository.getTodoList();
+  void getTodoListByDate(DateTime selectedDate) {
+    final todoList =  appRepository.getTodoListByDate(selectedDate);
+    emit(state.copyWith(todoList: todoList, status: todoList.isEmpty ? .empty : .success));
+  }
 
-    // try {
-    //   checkConnection();
-    //   emit(state.copyWith(todoList: todoList, status: .success));
-    // } catch(e) {
-    //   emit(state.copyWith(status: .error));
-    // }
+  void updateTodoStatus(int id, bool isDone, DateTime selectedDate) {
+    appRepository.updateTodoStatus(id, isDone);
 
-    if(todoList.isEmpty) {
-      emit(state.copyWith(todoList: [], status: .empty));
-    } else {
-      emit(state.copyWith(todoList: todoList, status: .success));
-    }
+    getTodoListByDate(selectedDate);
   }
 
 //   void checkConnection() {

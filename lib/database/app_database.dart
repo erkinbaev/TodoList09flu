@@ -7,8 +7,19 @@ import 'package:hive/hive.dart';
 class AppDatabase {
   final Box box = Hive.box('todoBox');
 
+  int _lastId = 0;
+
   AppDatabase() {
     loadTodos();
+
+    final savedId = box.get('lastTodoId', defaultValue: 0);
+
+    final maxId = _todoList.fold<int>(
+      0,
+      (current, todo) => todo.id > current ? todo.id : current,
+    );
+
+    _lastId = savedId > maxId ? savedId : maxId;
   }
 
   List<Todo> _todoList = [
@@ -16,6 +27,12 @@ class AppDatabase {
     // Todo(id: 2, title: "Посмотреть фильм Дюна", isDone: false, createAt: "16.10.2026", deadline: "18.10.2026"),
     // Todo(id: 3, title: "Записаться в зал", isDone: true, createAt: "25.05.2026", deadline: "01.06.2026"),
   ];
+
+  int _generateId() {
+    _lastId ++;
+    box.put('lastTodoId', _lastId);
+    return _lastId;
+  }
 
   void saveTodos() {
     final data = _todoList.map((todo) {
@@ -50,8 +67,19 @@ class AppDatabase {
     return _todoList;
   }
 
+  List<Todo> getTodoListByDate(DateTime selectedDate) {
+    return _todoList.where( (todo) {
+      final date = DateTime.tryParse(todo.createAt);
+
+      if (date == null) return false;
+
+      return date.year == selectedDate.year && date.month == selectedDate.month && date.day == selectedDate.day;
+    }).toList();
+  }
+
   //CREATE 
   void addTodo(Todo todo) {
+    todo.id = _generateId();
     _todoList.insert(0, todo);
     saveTodos();
   }
@@ -63,8 +91,23 @@ class AppDatabase {
     saveTodos();
   }
 
+  void updateTodoStatus(int id, bool isDone) {
+    final index = _todoList.indexWhere( (todo) => todo.id == id);
+
+    if (index == -1) return;
+
+    _todoList[index].isDone = isDone;
+
+    saveTodos();
+  }
+
   //DELETE 
   void deleteTodo(int id) {
      //Пройтись по списку и сравить id и удалить из List
+     _todoList.removeWhere(
+      (todo) => todo.id == id
+     );
+
+     saveTodos();
   }
 }

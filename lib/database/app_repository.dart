@@ -10,6 +10,10 @@ abstract class AppRepository {
   void updateTodo(int id, String title, String deadline);
 
   void deleteTodo(int id);
+
+  List<Todo> getTodoListByDate(DateTime selectedDate);
+
+  void updateTodoStatus(int id, bool isDone);
 }
 
 class AppRepositoryImpl extends AppRepository {
@@ -35,5 +39,15 @@ class AppRepositoryImpl extends AppRepository {
   @override
   void deleteTodo(int id) {
     // TODO: implement deleteTodo
+  }
+
+  @override
+  List<Todo> getTodoListByDate(DateTime selectedDate) {
+    return db.getTodoListByDate(selectedDate);
+  }
+
+  @override
+  void updateTodoStatus(int id, bool isDone) {
+    db.updateTodoStatus(id, isDone);
   }
 }
